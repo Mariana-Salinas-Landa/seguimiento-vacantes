@@ -1,9 +1,4 @@
-from supabase import create_client
-
-url = "https://ivmewysnzxbjnqlkcuul.supabase.co"
-key = "sb_publishable_rHPuhTdHZvxOZ8RawuxtLg_wsHgyuvm"
-
-supabase = create_client(url, key)
+from config import supabase
 
 data = {
     "empresa": "Empresa de prueba",

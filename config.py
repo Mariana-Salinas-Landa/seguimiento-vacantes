@@ -1,8 +1,9 @@
+import streamlit as st
 from supabase import create_client
 
-SUPABASE_URL = "https://ivmewysnzxbjnqlkcuul.supabase.co"
-SUPABASE_KEY = "sb_publishable_rHPuhTdHZvxOZ8RawuxtLg_wsHgyuvm"
-SUPABASE_STORAGE_URL = "https://ivmewysnzxbjnqlkcuul.supabase.co/storage/v1/object/public/cvs"
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+SUPABASE_STORAGE_URL = f"{SUPABASE_URL}/storage/v1/object/public/cvs"
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
