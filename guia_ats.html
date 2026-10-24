@@ -1,0 +1,359 @@
+<title>Método ATS + IA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: long-form guide — sticky side index on desktop, single column on phone */
+:root{
+  --bg:#f7f4ee; --surface:#ffffff; --ink:#201d18; --ink-dim:#5c564c;
+  --accent:#1f5f4f; --accent-soft:#e3ece7; --line:#e2dcce;
+  --code-bg:#201d18; --code-ink:#e9e4d8; --warn:#9a5a1f; --warn-soft:#f6e9d9;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15140f; --surface:#1d1b15; --ink:#efece2; --ink-dim:#a39c8c;
+    --accent:#5fd1ab; --accent-soft:#1e2b25; --line:#332f24;
+    --code-bg:#0e0d0a; --code-ink:#d9d4c6; --warn:#e0a564; --warn-soft:#2b2115;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15140f; --surface:#1d1b15; --ink:#efece2; --ink-dim:#a39c8c;
+  --accent:#5fd1ab; --accent-soft:#1e2b25; --line:#332f24;
+  --code-bg:#0e0d0a; --code-ink:#d9d4c6; --warn:#e0a564; --warn-soft:#2b2115;
+  color-scheme: dark;
+}
+
+* { box-sizing:border-box; }
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Source Serif 4', Georgia, serif;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+}
+h1,h2,h3,.label{ font-family:'Inter', system-ui, sans-serif; text-wrap:balance; }
+p, li { line-height:1.65; }
+a { color:var(--accent); }
+
+.wrap{ max-width:1180px; margin:0 auto; padding-block:48px 96px; }
+
+header.hero{
+  border-bottom:1px solid var(--line); padding-bottom:40px; margin-bottom:40px;
+}
+.label{
+  font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent);
+  font-weight:600; margin:0 0 12px;
+}
+h1{ font-size:clamp(28px,5vw,46px); line-height:1.1; margin:0 0 16px; font-weight:800; }
+.sub{ font-size:17px; color:var(--ink-dim); max-width:62ch; margin:0 0 20px; }
+.meta{ display:flex; flex-wrap:wrap; gap:10px 22px; font-family:'Inter',sans-serif; font-size:13px; color:var(--ink-dim); }
+.meta b{ color:var(--ink); }
+
+.layout{ display:grid; grid-template-columns: 220px minmax(0,1fr); gap:48px; align-items:start; }
+@media (max-width:860px){ .layout{ grid-template-columns:1fr; } nav.toc{ position:static !important; order:2; } }
+
+nav.toc{
+  position:sticky; top:24px; font-family:'Inter',sans-serif; font-size:13px;
+  display:flex; flex-direction:column; gap:2px; border-left:1px solid var(--line); padding-left:16px;
+}
+nav.toc a{ color:var(--ink-dim); text-decoration:none; padding:5px 0; border-left:2px solid transparent; margin-left:-17px; padding-left:15px; }
+nav.toc a:hover{ color:var(--ink); }
+
+main{ min-width:0; }
+section{ margin-bottom:56px; scroll-margin-top:20px; }
+section h2{
+  font-size:22px; margin:0 0 6px; display:flex; align-items:baseline; gap:10px;
+}
+section h2 .n{ color:var(--accent); font-size:14px; font-weight:700; }
+section > .dek{ color:var(--ink-dim); font-family:'Inter',sans-serif; font-size:14px; margin:0 0 20px; }
+
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:10px;
+  padding:22px 24px; margin:16px 0;
+}
+.card.warn{ background:var(--warn-soft); border-color:transparent; }
+.card.warn b{ color:var(--warn); }
+
+table{ width:100%; border-collapse:collapse; font-size:14.5px; }
+.tbl-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:10px; margin:16px 0; }
+th,td{ text-align:left; padding:10px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+th{ font-family:'Inter',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-dim); background:var(--accent-soft); }
+tr:last-child td{ border-bottom:none; }
+
+pre{
+  background:var(--code-bg); color:var(--code-ink); padding:18px 20px; border-radius:10px;
+  overflow-x:auto; font-size:13px; line-height:1.6; font-family:'IBM Plex Mono',monospace;
+}
+code{ font-family:'IBM Plex Mono',monospace; font-size:.92em; background:var(--accent-soft); padding:1px 5px; border-radius:4px; }
+pre code{ background:none; padding:0; }
+
+.prompt{
+  border:1px solid var(--accent); border-radius:10px; overflow:hidden; margin:18px 0;
+}
+.prompt-head{
+  background:var(--accent); color:var(--surface); font-family:'Inter',sans-serif; font-size:12px;
+  font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:9px 18px;
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+}
+.copy-btn{
+  background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.4); color:var(--surface);
+  font-family:'Inter',sans-serif; font-size:11px; padding:4px 10px; border-radius:6px; cursor:pointer;
+}
+.copy-btn:hover{ background:rgba(255,255,255,.3); }
+.prompt pre{ border-radius:0; margin:0; max-height:420px; }
+
+.score-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:16px 0; }
+.score{ border-radius:10px; padding:14px 16px; font-family:'Inter',sans-serif; }
+.score .pct{ font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; }
+.score .meaning{ font-size:12.5px; color:var(--ink-dim); margin-top:2px; }
+.s1{ background:#1f5f4f22; } .s2{ background:#3c8c6c22; } .s3{ background:var(--warn-soft); }
+.s4{ background:#c4453522; } .s5{ background:#c4453244; }
+
+.rule-list{ display:grid; gap:10px; margin:16px 0; }
+.rule{ display:flex; gap:12px; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+.rule .num{ font-family:'Inter',sans-serif; font-weight:800; color:var(--accent); flex-shrink:0; }
+.rule b{ display:block; margin-bottom:2px; }
+.rule span{ color:var(--ink-dim); font-size:14.5px; }
+
+.folder{ font-family:'IBM Plex Mono',monospace; font-size:13px; background:var(--code-bg); color:var(--code-ink); border-radius:10px; padding:18px 20px; white-space:pre; overflow-x:auto; }
+
+.cta{
+  background:var(--accent); color:var(--surface); border-radius:14px; padding:32px 28px; text-align:center;
+  margin-top:60px;
+}
+.cta h3{ font-size:22px; margin:0 0 8px; }
+.cta p{ margin:0; opacity:.92; max-width:50ch; margin-inline:auto; }
+
+footer{ margin-top:56px; padding-top:24px; border-top:1px solid var(--line); font-family:'Inter',sans-serif; font-size:12.5px; color:var(--ink-dim); }
+</style>
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="label">Método · Búsqueda de empleo con IA</p>
+    <h1>Cómo hacer que tu CV pase el filtro automático — y llegue a un humano</h1>
+    <p class="sub">Un método probado para entender cómo leen tu CV los sistemas ATS, por qué la "similitud de coseno" decide si avanzas, y cómo adaptar cada postulación sin inventar una sola línea.</p>
+    <div class="meta">
+      <span><b>Autora:</b> Mariana Salinas Landa</span>
+      <span><b>Construido:</b> jun–ago 2026</span>
+      <span><b>Resultados:</b> 3 personas colocadas</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc">
+      <a href="#parte0">0 · Cómo funciona un ATS</a>
+      <a href="#parte1">1 · Similitud de coseno</a>
+      <a href="#parte2">2 · El intake honesto</a>
+      <a href="#parte3">3 · CV Maestro</a>
+      <a href="#parte4">4 · Buscar vacantes</a>
+      <a href="#parte5">5 · Scoring antes de aplicar</a>
+      <a href="#parte6">6 · CV Adaptado</a>
+      <a href="#parte8">8 · Reglas de oro</a>
+      <a href="#parte9">9 · Ritmo semanal</a>
+    </nav>
+
+    <main>
+
+      <section id="parte0">
+        <h2><span class="n">00</span> El modelo mental: cómo funciona realmente un ATS</h2>
+        <p class="dek">Todo el método se basa en entender esto.</p>
+        <p>Un ATS (Workday, Greenhouse, Lever, Taleo, iCIMS, SAP SuccessFactors, BambooHR) hace <b>7 pasos</b> con cada CV que recibe:</p>
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>#</th><th>Qué hace el ATS</th><th>Qué lo rompe</th><th>Qué hacemos</th></tr>
+            <tr><td>1</td><td>Parsea el archivo a texto plano</td><td>Tablas, columnas, imágenes, text boxes</td><td>CV en una sola columna, sin tablas ni gráficos</td></tr>
+            <tr><td>2</td><td>Detecta secciones por encabezado</td><td>Títulos creativos ("Mi trayectoria")</td><td>Encabezados estándar: Resumen, Habilidades, Experiencia…</td></tr>
+            <tr><td>3</td><td>Extrae historial por fechas</td><td><code>01/2020</code> parsea mal</td><td>Siempre <code>enero 2020 – marzo 2023</code></td></tr>
+            <tr><td>4</td><td>Extrae educación por palabras clave</td><td>Omitir el nivel</td><td>Literal: licenciatura, ingeniería, maestría, titulado…</td></tr>
+            <tr><td>5</td><td>Compara keywords CV vs. vacante</td><td>Sinónimos creativos</td><td><b>Espejear el vocabulario literal de la vacante</b></td></tr>
+            <tr><td>6</td><td>Aplica filtros knockout</td><td>Requisito "indispensable" que no cumples</td><td>Detectarlo antes de invertir tiempo</td></tr>
+            <tr><td>7</td><td>Rankea y muestra top 10–20 a un humano</td><td>Quedar en el lugar 40</td><td>Todo lo anterior sirve para ganar el ranking</td></tr>
+          </table>
+        </div>
+        <div class="card warn"><p style="margin:0"><b>La consecuencia práctica:</b> un CV precioso en Canva con columnas e iconos muere en el paso 1. Un CV feo en texto plano con las palabras correctas llega al humano. El CV bonito es para cuando ya te llamaron.</p></div>
+      </section>
+
+      <section id="parte1">
+        <h2><span class="n">01</span> Similitud de coseno: por qué esto funciona</h2>
+        <p class="dek">El paso 5 del ATS es literalmente esto.</p>
+
+        <div class="card">
+          <p style="margin:0 0 10px"><b>La idea en una frase, sin matemáticas:</b> imagina que tu CV y la vacante son dos listas de palabras clave. El ATS no "lee" tu CV como una persona — cuenta qué tan parecidas son esas dos listas. Mientras más palabras compartan (en el mismo tema, en el mismo lenguaje), más alto es el match.</p>
+          <p style="margin:0">Si la vacante dice "atención al cliente" y tu CV dice "trato con usuarios", para ti es lo mismo — pero para el sistema son dos listas distintas, y el match baja aunque tú sepas hacer exactamente eso.</p>
+        </div>
+
+        <p>Técnicamente, esto se llama <b>similitud de coseno</b>: tu CV se convierte en un vector de números, la vacante se convierte en otro vector, y el sistema mide qué tan "alineados" están. Entre más alineados, más alto el score — sin necesidad de entender la fórmula para aprovechar la idea:</p>
+        <pre><code>similitud_coseno(A, B) = (A · B) / (||A|| × ||B||)
+
+Resultado: un número entre 0 y 1
+1.0 = idénticos  ·  0.0 = sin relación</code></pre>
+        <p style="margin-top:-6px"><span style="color:var(--ink-dim);font-size:14px">👉 Lo único que necesitas quedarte de esto: <b>usa las mismas palabras que usa la vacante</b>, no sinónimos creativos.</span></p>
+        <p><b>Por qué coseno y no distancia euclidiana:</b> el coseno ignora el tamaño. Un CV de 1 página y uno de 3 con el mismo contenido temático dan casi el mismo resultado. Al ATS le importa <i>de qué hablas</i>, no cuánto escribes.</p>
+
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Tipo de ATS</th><th>Cómo compara</th><th>¿Entiende sinónimos?</th><th>Cómo ganarle</th></tr>
+            <tr><td><b>Moderno</b> (Workday, Greenhouse)</td><td>Embeddings semánticos</td><td>✅ Sabe que "líder de proyecto" ≈ "project manager"</td><td>Cobertura temática amplia y coherente</td></tr>
+            <tr><td><b>Legacy</b> (Taleo, portales propios)</td><td>TF-IDF / frecuencia + posición</td><td>❌ Match literal</td><td>Palabras exactas de la vacante, repetidas en 3 zonas</td></tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <p style="margin:0 0 8px"><b>El límite honesto de esto:</b> la similitud de coseno no entiende mentiras. Si metes "Airflow" sin saber Airflow, subes el score y te quemas en la entrevista técnica.</p>
+          <p style="margin:0">El método optimiza <i>presentación</i>, nunca inventa <i>contenido</i>. Un CV inflado que pasa el ATS y se cae en entrevista es peor que no aplicar.</p>
+        </div>
+      </section>
+
+      <section id="parte2">
+        <h2><span class="n">02</span> El intake honesto</h2>
+        <p class="dek">Sin esto, la IA rellena huecos con suposiciones y el CV se cae en entrevista.</p>
+        <p>La parte más importante de todo el método es esta división de 3 columnas, hecha con total honestidad:</p>
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>✅ Lo uso solo</th><th>⚠️ Lo he tocado</th><th>❌ No lo tengo</th></tr>
+            <tr><td>Lo defiendo en entrevista técnica, lo uso en el trabajo o en un proyecto real</td><td>Curso, tutorial, lo vi de lejos</td><td>Ni idea</td></tr>
+          </table>
+        </div>
+        <p><b>Regla:</b> la columna ✅ va al CV. La ⚠️ solo si la vacante la pide como "deseable". La ❌ nunca, bajo ninguna forma disfrazada.</p>
+        <div class="card warn"><p style="margin:0"><b>El inglés es el knockout #1</b> de las vacantes bien pagadas. Mentir aquí se descubre en la primera llamada.</p></div>
+      </section>
+
+      <section id="parte3">
+        <h2><span class="n">03</span> Generar el CV Maestro</h2>
+        <p class="dek">Una sola vez, al inicio. Es tu CV genérico para OCC, LinkedIn, Indeed.</p>
+        <div class="prompt">
+          <div class="prompt-head">
+            <span>Prompt — CV Maestro</span>
+            <button class="copy-btn" data-copy="p1">Copiar</button>
+          </div>
+          <pre><code id="p1">Eres un especialista en optimización de CVs para sistemas ATS. Tu objetivo
+es transformar el CV de un candidato para que maximice sus probabilidades
+de pasar el filtro automático de cualquier ATS comercial y llegar a manos
+de un reclutador humano.
+
+REGLAS INVIOLABLES
+1. No inventes información. Si falta un dato, márcalo [CONFIRMAR: ...].
+2. No elimines experiencia real.
+3. Coherencia Resumen ↔ cargo actual (no inflar títulos).
+4. Detecta y resuelve solapes de fechas.
+5. Espejea el vocabulario literal del perfil ideal.
+6. Prioriza logros cuantificables (números, %, $).
+7. No uses tablas, columnas ni imágenes — Markdown plano, una columna.
+8. Meses en texto ("enero 2018"), nunca numéricos.
+
+FORMATO: Resumen Profesional · Habilidades · Experiencia Laboral ·
+Educación · Idiomas — encabezados estándar, sin excepción.
+
+Cuando recibas el CV y el perfil ideal: ejecuta el análisis internamente
+y entrega ÚNICAMENTE el CV transformado en Markdown.</code></pre>
+        </div>
+      </section>
+
+      <section id="parte4">
+        <h2><span class="n">04</span> Cómo buscar vacantes</h2>
+        <p class="dek">La regla que más vacantes destapó: buscar por stack, no por título.</p>
+        <p>Los títulos de puesto en México son un caos: la misma chamba se llama "Data Engineer Jr", "Ingeniero de Datos" o "Analytics Engineer". Buscar por título pierde la mitad del mercado. <b>Busca por la herramienta que dominas</b> — <code>bigquery</code>, <code>python sql etl</code>, <code>power bi dax</code> — eso te da vacantes donde eres competitiva.</p>
+
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Plataforma</th><th>Veredicto</th><th>Nota</th></tr>
+            <tr><td>OCC Mundial</td><td>✅ La mejor para México</td><td>Solo 1 CV activo → necesitas un buen CV Maestro</td></tr>
+            <tr><td>Indeed MX</td><td>✅ Muy buena</td><td>Buen volumen, links directos fáciles</td></tr>
+            <tr><td>Computrabajo</td><td>✅ Útil</td><td>Más perfil operativo/medio</td></tr>
+            <tr><td>LinkedIn</td><td>✅ Útil con filtros</td><td>Ojo: resuelve ubicación de forma rara</td></tr>
+          </table>
+        </div>
+        <div class="card"><p style="margin:0"><b>Nunca truncar el link.</b> Un link de búsqueda no sirve — siempre construye el link directo a la vacante (<code>?jobid=</code> en OCC, <code>vjk=</code> en Indeed).</p></div>
+      </section>
+
+      <section id="parte5">
+        <h2><span class="n">05</span> Scoring honesto, antes de invertir tiempo</h2>
+        <p class="dek">Adaptar un CV toma 30–40 min. El scoring toma 2 min y te dice si vale la pena.</p>
+        <p>Cada requisito de la vacante se clasifica en <b>KNOCKOUT</b> (indispensable), <b>IMPRESCINDIBLE</b> o <b>DESEABLE</b>, y se compara contra el candidato con ✅ / ⚠️ / ❌.</p>
+        <div class="score-grid">
+          <div class="score s1"><div class="pct">80%+</div><div class="meaning">Match fuerte → postular hoy</div></div>
+          <div class="score s2"><div class="pct">65–79%</div><div class="meaning">Match bueno → postular con CV adaptado</div></div>
+          <div class="score s3"><div class="pct">50–64%</div><div class="meaning">Parcial → solo si vale la pena</div></div>
+          <div class="score s4"><div class="pct">35–49%</div><div class="meaning">Brechas fuertes → saltar</div></div>
+          <div class="score s5"><div class="pct">&lt;35%</div><div class="meaning">Knockout fallado → no</div></div>
+        </div>
+      </section>
+
+      <section id="parte6">
+        <h2><span class="n">06</span> CV Adaptado a una vacante específica</h2>
+        <p class="dek">Solo para vacantes con score ≥65%. Se genera a partir del CV Maestro — nunca lo reemplaza.</p>
+        <p>Para cada brecha (⚠️ o ❌), la IA <b>pregunta antes de escribir</b> — nunca asume. Si la respuesta es "no", esa habilidad no se agrega al CV, sin excepción.</p>
+        <div class="card">
+          <p style="margin:0">Cada CV adaptado sale con su propia tabla de <b>qué se agregó / qué se quitó / qué se dejó igual</b> — nunca caja negra. Lo tienes que poder defender en entrevista.</p>
+        </div>
+      </section>
+
+      <section id="parte8">
+        <h2><span class="n">08</span> Reglas de oro</h2>
+        <p class="dek">Lo que aprendimos a golpes.</p>
+        <div class="rule-list">
+          <div class="rule"><span class="num">01</span><div><b>La IA nunca inventa, pregunta.</b><span>Un CV inflado que se cae en entrevista es peor que no aplicar — quemas la empresa para siempre.</span></div></div>
+          <div class="rule"><span class="num">02</span><div><b>Diagnóstico honesto, no amable.</b><span>Si la brecha es real, se dice "brecha real", no "experiencia adyacente".</span></div></div>
+          <div class="rule"><span class="num">03</span><div><b>Honesto no es lo mismo que seco.</b><span>El contenido no se suaviza; la forma sí. Franqueza con calidez, no con frialdad.</span></div></div>
+          <div class="rule"><span class="num">04</span><div><b>Score + sueldo + link, siempre juntos.</b><span>Permite decidir en 5 segundos si vale la pena.</span></div></div>
+          <div class="rule"><span class="num">05</span><div><b>Detecta vacantes mal etiquetadas.</b><span>Muchas dicen "Jr" y piden 3 años y liderazgo — el problema es la vacante, no tú.</span></div></div>
+          <div class="rule"><span class="num">06</span><div><b>Identifica el gap que más bloquea.</b><span>Un solo gap repetido en el 80% de las vacantes puede mover tu score 20 puntos.</span></div></div>
+          <div class="rule"><span class="num">07</span><div><b>El mercado no está obligado a tener tu stack.</b><span>Si tu stack es raro en tu ciudad, el volumen será bajo — no es que no sirvas.</span></div></div>
+          <div class="rule"><span class="num">08</span><div><b>Declara tus restricciones desde el inicio.</b><span>Si necesitas remoto, filtra remoto desde el minuto uno.</span></div></div>
+          <div class="rule"><span class="num">09</span><div><b>Ritmo sostenible &gt; sprint heroico.</b><span>5 postulaciones bien hechas valen más que 30 disparadas al aire.</span></div></div>
+          <div class="rule"><span class="num">10</span><div><b>Nunca caja negra.</b><span>Tienes que saber exactamente qué dice tu CV — lo vas a defender en entrevista.</span></div></div>
+        </div>
+      </section>
+
+      <section id="parte9">
+        <h2><span class="n">09</span> Operación semanal: el ritmo que sí funciona</h2>
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Día</th><th>Qué hacer</th><th>Tiempo</th></tr>
+            <tr><td>Lunes</td><td>Barrido de plataformas con 4+ variantes de búsqueda</td><td>60 min</td></tr>
+            <tr><td>Martes</td><td>Scoring de todas las vacantes encontradas. Quedarte con ≥65%</td><td>45 min</td></tr>
+            <tr><td>Miércoles</td><td>CV adaptado para el top 3</td><td>90 min</td></tr>
+            <tr><td>Jueves</td><td>Postular y registrar en bitácora</td><td>30 min</td></tr>
+            <tr><td>Viernes</td><td>Seguimiento de aplicaciones viejas + cerrar el gap #1</td><td>60 min</td></tr>
+          </table>
+        </div>
+        <p>Tu fuente de verdad es una bitácora única:</p>
+        <pre><code>| Fecha | Vacante | Empresa | Plataforma | Sueldo | Score | CV usado | Estado | Link |
+
+Estados: ⏳ Pendiente · ✅ Aplicada · 📞 Entrevista · ❌ Rechazo · 🎉 Oferta</code></pre>
+      </section>
+
+      <div class="cta">
+        <h3>¿Quieres implementarlo en tu propia búsqueda?</h3>
+        <p>Este método lo construí y probé en mi propio proceso — con resultados reales. Escríbeme si quieres que lo adaptemos juntos a tu perfil.</p>
+      </div>
+
+      <footer>
+        Método desarrollado por Mariana Salinas Landa. Probado en 3 búsquedas reales de empleo (Data Engineering y Full Stack Development, CDMX, 2026).
+      </footer>
+
+    </main>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    const id = btn.getAttribute('data-copy');
+    const text = document.getElementById(id).innerText;
+    try{
+      await navigator.clipboard.writeText(text);
+      btn.textContent = '¡Copiado!';
+    }catch(e){
+      const range = document.createRange();
+      range.selectNode(document.getElementById(id));
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      btn.textContent = 'Selecciona y copia';
+    }
+    setTimeout(()=>{ btn.textContent = 'Copiar'; }, 1800);
+  });
+});
+</script>
