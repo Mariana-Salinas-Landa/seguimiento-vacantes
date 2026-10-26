@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import math
-from config import supabase
+from config import supabase, PERSONA
 
 column_config = {
     "favorito": st.column_config.CheckboxColumn("Favorito"),
@@ -46,7 +46,7 @@ def guardar_cambios(edited_data):
             if row_id:
                 supabase.table("Vacantes").update(row_clean).eq("id", row_id).execute()
             else:
-                row_clean["persona"] = "mariana"
+                row_clean["persona"] = PERSONA
                 supabase.table("Vacantes").insert(row_clean).execute()
         except Exception as e:
             errores.append(str(e))

@@ -1,5 +1,5 @@
 import streamlit as st
-from config import supabase, PLATAFORMAS, SUPABASE_STORAGE_URL
+from config import supabase, PLATAFORMAS, SUPABASE_STORAGE_URL, PERSONA
 from chat import mostrar_chat
 from tabla import mostrar_tabla
 
@@ -17,7 +17,7 @@ div[data-testid="stPopoverBody"] {
 st.title("💼 Seguimiento de vacantes")
 st.caption("Tu centro de control para la búsqueda de empleo")
 
-response = supabase.table("Vacantes").select("*").eq("persona", "mariana").execute()
+response = supabase.table("Vacantes").select("*").eq("persona", PERSONA).execute()
 data = response.data
 
 mostrar_chat(data)
