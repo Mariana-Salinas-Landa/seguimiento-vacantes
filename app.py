@@ -32,6 +32,8 @@ with st.sidebar:
 
     total_nuevas = len([d for d in data if d.get("estado") == "nueva"])
     total_postuladas = len([d for d in data if d.get("estado") == "aplicado" and d.get("empresa") is not None])
+    total_entrevista = len([d for d in data if d.get("estado") == "entrevista"])
+    total_rechazadas = len([d for d in data if d.get("estado") == "rechazada"])
     total_descartadas = len([d for d in data if d.get("estado") == "descartada"])
     total_favoritos = len([d for d in data if d.get("favorito") is True])
 
@@ -39,6 +41,10 @@ with st.sidebar:
         st.session_state.vista = "nuevas"
     if st.button(f"✅ Postuladas ({total_postuladas})", use_container_width=True):
         st.session_state.vista = "postuladas"
+    if st.button(f"📞 Entrevista ({total_entrevista})", use_container_width=True):
+        st.session_state.vista = "entrevista"
+    if st.button(f"❌ Rechazadas ({total_rechazadas})", use_container_width=True):
+        st.session_state.vista = "rechazadas"
     if st.button(f"🗑️ Descartadas ({total_descartadas})", use_container_width=True):
         st.session_state.vista = "descartadas"
     if st.button(f"⭐ Favoritas ({total_favoritos})", use_container_width=True):
@@ -55,6 +61,12 @@ with contenedor:
     elif vista_actual == "postuladas":
         st.header("✅ Postuladas")
         filtrado = [d for d in data if d.get("estado") == "aplicado" and d.get("empresa") is not None]
+    elif vista_actual == "entrevista":
+        st.header("📞 Entrevista")
+        filtrado = [d for d in data if d.get("estado") == "entrevista"]
+    elif vista_actual == "rechazadas":
+        st.header("❌ Rechazadas")
+        filtrado = [d for d in data if d.get("estado") == "rechazada"]
     elif vista_actual == "descartadas":
         st.header("🗑️ Descartadas")
         filtrado = [d for d in data if d.get("estado") == "descartada"]

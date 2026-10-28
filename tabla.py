@@ -10,7 +10,7 @@ column_config = {
     "fecha_aplicacion": st.column_config.DateColumn("Fecha de aplicación", format="YYYY-MM-DD"),
     "estado": st.column_config.SelectboxColumn(
         "Estado",
-        options=["nueva", "aplicado", "entrevista", "descartada"]
+        options=["nueva", "aplicado", "entrevista", "rechazada", "descartada"]
     ),
     "plataforma": st.column_config.SelectboxColumn(
         "Plataforma",
