@@ -41,11 +41,18 @@ Reglas importantes:
 
                 with st.chat_message("assistant"):
                     with st.spinner("Pensando..."):
-                        respuesta = ollama.chat(
-                            model="llama3.2",
-                            messages=[{"role": "user", "content": prompt}]
-                        )
-                        texto_respuesta = respuesta["message"]["content"]
+                        try:
+                            cliente = ollama.Client(timeout=10)
+                            respuesta = cliente.chat(
+                                model="llama3.2",
+                                messages=[{"role": "user", "content": prompt}]
+                            )
+                            texto_respuesta = respuesta["message"]["content"]
+                        except Exception:
+                            texto_respuesta = (
+                                "El chat con IA solo funciona corriendo la app en tu computadora "
+                                "(necesita Ollama instalado localmente). En Streamlit Cloud no está disponible."
+                            )
                         st.write(texto_respuesta)
 
                 st.session_state.chat_historial.append({"role": "assistant", "content": texto_respuesta})
