@@ -1,26 +1,14 @@
 import streamlit as st
 from config import supabase, PLATAFORMAS, PERSONA, url_cv
-from chat import mostrar_chat
 from tabla import mostrar_tabla
 
 st.set_page_config(layout="wide", page_title="Seguimiento de vacantes", page_icon="💼")
-
-st.markdown("""
-<style>
-div[data-testid="stPopoverBody"] {
-    width: 800px !important;
-    min-height: 600px !important;
-}
-</style>
-""", unsafe_allow_html=True)
 
 st.title("💼 Seguimiento de vacantes")
 st.caption("Tu centro de control para la búsqueda de empleo")
 
 response = supabase.table("Vacantes").select("*").eq("persona", PERSONA).execute()
 data = response.data
-
-mostrar_chat(data)
 
 if "vista" not in st.session_state:
     st.session_state.vista = "nuevas"
