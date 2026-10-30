@@ -8,6 +8,7 @@ PERSONA = st.secrets.get("PERSONA", "mariana")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 PLATAFORMAS = ["Todas", "LinkedIn", "Indeed", "OCC", "Computrabajo", "Bumeran"]
+# Forzar recarga completa en Streamlit Cloud tras ImportError por caché stale
 
 
 def url_cv(nombre_archivo):
