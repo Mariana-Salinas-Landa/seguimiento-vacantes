@@ -18,5 +18,7 @@ def url_cv(nombre_archivo):
             f"{PERSONA}/{nombre_archivo}", 3600
         )
         return resultado["signedURL"]
-    except Exception:
+    except Exception as e:
+        import streamlit as st
+        st.caption(f"DEBUG: {e}")
         return None
