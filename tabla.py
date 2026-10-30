@@ -60,6 +60,34 @@ def guardar_cambios(edited_data):
         st.rerun()
 
 
+def guardar_cambios_automaticos(df, key_suffix):
+    editor_key = f"editor_{key_suffix}"
+    estado_editor = st.session_state[editor_key]
+
+    filas_a_guardar = []
+
+    for idx_str, cambios in estado_editor.get("edited_rows", {}).items():
+        idx = int(idx_str)
+        fila = df.iloc[idx].to_dict()
+        fila.update(cambios)
+        filas_a_guardar.append(fila)
+
+    for fila_nueva in estado_editor.get("added_rows", []):
+        if fila_nueva:
+            filas_a_guardar.append(fila_nueva)
+
+    if not filas_a_guardar:
+        return
+
+    for row in filas_a_guardar:
+        if pd.notna(row.get("fecha_aplicacion")):
+            row["fecha_aplicacion"] = str(row["fecha_aplicacion"])[:10]
+        else:
+            row["fecha_aplicacion"] = None
+
+    guardar_cambios(filas_a_guardar)
+
+
 def mostrar_tabla(datos, key_suffix):
     st.subheader(f"Total: {len(datos)}")
     df = pd.DataFrame(datos)
@@ -74,22 +102,13 @@ def mostrar_tabla(datos, key_suffix):
         )
         df = df[mask]
 
-    edited = st.data_editor(
+    st.data_editor(
         df,
         column_config=column_config,
         num_rows="dynamic",
         key=f"editor_{key_suffix}",
         height=600,
-        use_container_width=True
+        use_container_width=True,
+        on_change=guardar_cambios_automaticos,
+        args=(df, key_suffix)
     )
-
-    edited = edited.where(pd.notnull(edited), None)
-
-    if st.button("Guardar cambios", key=f"guardar_{key_suffix}"):
-        edited_records = edited.to_dict(orient="records")
-        for row in edited_records:
-            if pd.notna(row.get("fecha_aplicacion")):
-                row["fecha_aplicacion"] = str(row["fecha_aplicacion"])[:10]
-            else:
-                row["fecha_aplicacion"] = None
-        guardar_cambios(edited_records)
