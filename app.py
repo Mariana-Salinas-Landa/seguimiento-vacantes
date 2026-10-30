@@ -1,5 +1,5 @@
 import streamlit as st
-from config import supabase, PLATAFORMAS, SUPABASE_STORAGE_URL, PERSONA
+from config import supabase, PLATAFORMAS, PERSONA, url_cv
 from chat import mostrar_chat
 from tabla import mostrar_tabla
 
@@ -85,10 +85,10 @@ st.subheader("📄 Panel de CVs enviados")
 col1, col2, col3 = st.columns(3)
 with col1:
     st.metric("CV Ingeniero de Datos", len([d for d in data if d.get("cv_ingeniero_datos") is True]))
-    st.link_button("Ver PDF", f"{SUPABASE_STORAGE_URL}/cv_ingeniero_datos.pdf", use_container_width=True)
+    st.link_button("Ver PDF", url_cv("cv_ingeniero_datos.pdf"), use_container_width=True)
 with col2:
     st.metric("CV Maestro", len([d for d in data if d.get("cv_maestro") is True]))
-    st.link_button("Ver PDF", f"{SUPABASE_STORAGE_URL}/cv_maestro.pdf", use_container_width=True)
+    st.link_button("Ver PDF", url_cv("cv_maestro.pdf"), use_container_width=True)
 with col3:
     st.metric("CV Especial", len([d for d in data if d.get("cv_especial") is True]))
     st.caption("Se genera por vacante — sin archivo fijo")
